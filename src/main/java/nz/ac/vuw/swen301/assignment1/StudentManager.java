@@ -85,4 +85,7 @@ public class StudentManager {
     }
 
 
+    public Student findById(String id42) {
+        return null;
+    }
 }
