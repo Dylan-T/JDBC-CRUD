@@ -1,10 +1,12 @@
 package nz.ac.vuw.swen301.assignment1;
 
 import nz.ac.vuw.swen301.studentmemdb.StudentDB;
+
+import java.sql.*;
 import java.util.Collection;
 
 /**
- * A student managers providing basic CRUD operations for instances of Student, and a read operation for instanbces of Degree.
+ * A student managers providing basic CRUD operations for instances of Student, and a read operation for instances of Degree.
  * @author jens dietrich
  */
 public class StudentManager {
@@ -25,7 +27,12 @@ public class StudentManager {
      * @param id
      * @return
      */
-    public static Student readStudent(String id) {
+    public static Student readStudent(String id) throws SQLException {
+        Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records;create=true");
+        Statement statement = con.createStatement();
+        String sql = "SELECT * FROM STUDENTS WHERE id='" + id + "'";
+        ResultSet result = statement.executeQuery(sql);
+        System.out.println(result.toString());
         return null;
     }
 
@@ -84,7 +91,7 @@ public class StudentManager {
         return null;
     }
 
-
+    //Fix this
     public Student findById(String id42) {
         return null;
     }
