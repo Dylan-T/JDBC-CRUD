@@ -4,16 +4,25 @@ import nz.ac.vuw.swen301.studentmemdb.StudentDB;
 
 import java.sql.*;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * A student managers providing basic CRUD operations for instances of Student, and a read operation for instances of Degree.
  * @author jens dietrich
  */
 public class StudentManager {
+    static HashMap<String, Student> sCache = new HashMap<String, Student>();
+    static HashMap<String, Degree> dCache = new HashMap<String, Degree>();
 
     //  DO NOT REMOVE THE FOLLOWING -- THIS WILL ENSURE THAT THE DATABASE IS AVAILABLE
     // AND THE APPLICATION CAN CONNECT TO IT WITH JDBC
     static {
+        /**
+         * DB STRUCTURE:
+         * id    |first_name|name |degree
+         * id0001|Alice     |Alpha|deg0
+         * id0002|Bob       |Beta |deg1
+         */
         StudentDB.init();
     }
     // DO NOT REMOVE BLOCK ENDS HERE
@@ -28,12 +37,27 @@ public class StudentManager {
      * @return
      */
     public static Student readStudent(String id) throws SQLException {
-        Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records;create=true");
+        //Check sCache first
+        Student cStu = sCache.get(id);
+        if(cStu != null) {
+            return cStu;
+        }
+
+        //Get data from StudentDB - STUDENTS
+        Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
         Statement statement = con.createStatement();
         String sql = "SELECT * FROM STUDENTS WHERE id='" + id + "'";
         ResultSet result = statement.executeQuery(sql);
-        System.out.println(result.toString());
-        return null;
+        con.close();
+
+        //Check a result was found
+        if(!result.next()){
+            return null;
+        }
+
+        Student stu = new Student(id, result.getString(2), result.getString(3), readDegree(result.getString(4)));
+        sCache.put(id, stu);
+        return stu;
     }
 
     /**
@@ -43,8 +67,28 @@ public class StudentManager {
      * @param id
      * @return
      */
-    public static Degree readDegree(String id) {
-        return null;
+    public static Degree readDegree(String id) throws SQLException {
+        //Check dCache first
+        Degree cDeg = dCache.get(id);
+        if(cDeg != null) {
+            return cDeg;
+        }
+
+        //Get data from studentDB - DEGREES
+        Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
+        Statement statement = con.createStatement();
+        String sql = "SELECT * FROM DEGREES WHERE id='" + id + "'";
+        ResultSet result = statement.executeQuery(sql);
+        con.close();
+
+        //Check a result was found
+        if(!result.next()){
+            return null;
+        }
+
+        Degree deg = new Degree(id, result.getString(2));
+        dCache.put(id, deg);
+        return deg;
     }
 
     /**
@@ -92,7 +136,7 @@ public class StudentManager {
     }
 
     //Fix this
-    public Student findById(String id42) {
+    public Student findById(String id) {
         return null;
     }
 }
