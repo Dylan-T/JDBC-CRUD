@@ -46,7 +46,7 @@ public class StudentManager {
         //Get data from StudentDB - STUDENTS
         Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
         Statement statement = con.createStatement();
-        String sql = "SELECT * FROM STUDENTS WHERE id='" + id + "'";
+        String sql = "select * from STUDENTS where id='" + id + "'";
         ResultSet result = statement.executeQuery(sql);
         con.close();
 
@@ -77,7 +77,7 @@ public class StudentManager {
         //Get data from studentDB - DEGREES
         Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
         Statement statement = con.createStatement();
-        String sql = "SELECT * FROM DEGREES WHERE id='" + id + "'";
+        String sql = "select * from DEGREES where id='" + id + "'";
         ResultSet result = statement.executeQuery(sql);
         con.close();
 
@@ -96,7 +96,14 @@ public class StudentManager {
      * I.e., after this, trying to read a student with this id will return null.
      * @param student
      */
-    public static void delete(Student student) {}
+    public static void delete(Student student) throws SQLException {
+        //Get data from studentDB - DEGREES
+        Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
+        Statement statement = con.createStatement();
+        String sql = "DELETE * FROM STUDENTS WHERE id='" + student.getId() + "'";
+        ResultSet result = statement.executeQuery(sql);
+        con.close();
+    }
 
     /**
      * Update (synchronize) a student instance with the database.
@@ -104,7 +111,9 @@ public class StudentManager {
      * Note that names and first names can only be max 1o characters long.
      * @param student
      */
-    public static void update(Student student) {}
+    public static void update(Student student){
+
+    }
 
 
     /**
