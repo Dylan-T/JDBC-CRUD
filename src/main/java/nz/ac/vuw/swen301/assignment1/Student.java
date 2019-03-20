@@ -61,4 +61,13 @@ public class Student {
     public int hashCode() {
         return Objects.hash(id, name, firstName);
     }
+
+    @Override
+    public String toString() {
+        return "id: " + id + "\n" +
+                "Name: " + name + "\n" +
+                "First Name: " + firstName + "\n" +
+                "Degree: " + degree.getName() + "\n";
+     }
+
 }

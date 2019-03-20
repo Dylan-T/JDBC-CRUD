@@ -12,6 +12,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 
 public class StudentManagerTest {
@@ -26,26 +27,28 @@ public class StudentManagerTest {
     // DO NOT REMOVE BLOCK ENDS HERE
 
     @Test
-    public void testReadStudent() throws Exception {
+    public void testReadStudent() {
         Student student = new StudentManager().readStudent("id52");
         assertNotNull(student);
     }
 
-    @Test
-    public void testCreateStudent() throws Exception {
-        Student createdStu = StudentManager.createStudent("Test", "Test", StudentManager.readDegree("deg1"));
-        Student student = StudentManager.readStudent("id10001");
-        assertEquals(createdStu, student);
+    @Test(timeout = 1000)
+    public void testReadStudentSpeed()  {
+        long start = System.currentTimeMillis();
+        for(int i = 1; i < 1000; i++){
+            Student student = StudentManager.readStudent("id"+i);
+        }
+        System.out.println(System.currentTimeMillis() - start);
     }
 
     @Test
-    public void testGetAllStudentIds() throws Exception {
+    public void testGetAllStudentIds()  {
         Collection<String> ids = StudentManager.getAllStudentIds();
-        assertEquals(10001, ids.size());
+        assertEquals(10000, ids.size());
     }
 
     @Test
-    public void testGetAllDegreeIds() throws Exception {
+    public void testGetAllDegreeIds() {
         Iterable<String> ids = StudentManager.getAllDegreeIds();
         int counter = 0;
         for(String s : ids){
@@ -54,12 +57,38 @@ public class StudentManagerTest {
         assertEquals(counter, 16);
     }
 
-    @Test(timeout = 1000)
-    public void testReadStudentSpeed() throws Exception {
-        long start = System.currentTimeMillis();
-        for(int i = 1; i < 1000; i++){
-            Student student = StudentManager.readStudent("id"+i);
-        }
-        System.out.println(System.currentTimeMillis() - start);
+
+
+    @Test
+    public void testCreateStudent()  {
+        Student createdStu = StudentManager.createStudent("Test", "Test", StudentManager.readDegree("deg1"));
+        Student student = StudentManager.readStudent("id10001");
+        assertEquals(createdStu, student);
     }
+
+    @Test
+    public void testDeleteStudent()  {
+        Student before = StudentManager.readStudent("id1");
+        assertNotNull(before);
+        StudentManager.delete(before);
+        Student after = StudentManager.readStudent("id1");
+        assertNull(after);
+    }
+
+
+
+
+    @Test
+    public void testUpdateStudent()  {
+        Student before = StudentManager.readStudent("id1");
+        Student after = StudentManager.readStudent("id1");
+
+        after.setFirstName("FNTesting");
+        after.setName("NTesting");
+        StudentManager.update(after);
+
+        assert(!before.equals(after));
+    }
+
+
 }
