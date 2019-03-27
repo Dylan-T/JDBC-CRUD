@@ -39,11 +39,12 @@ public class StudentManager {
      */
     public static Student readStudent(String id) {
         //Check sCache first
-        //Student cStu = sCache.get(id);
-        //if(cStu != null) {
-        //    return cStu;
-        //}
+        Student cStu = sCache.get(id);
+        if(cStu != null) {
+            return cStu;
+        }
         try {
+            //Get info from database
             String sql = "select * from STUDENTS where id=?";
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1, id);
@@ -54,6 +55,7 @@ public class StudentManager {
                 return null;
             }
 
+            //Add to cache
             Student stu = new Student(id, result.getString(2), result.getString(3), readDegree(result.getString(4)));
             sCache.put(id, stu);
             return stu;
@@ -73,10 +75,10 @@ public class StudentManager {
      */
     public static Degree readDegree(String id) {
         //Check dCache first
-        //Degree cDeg = dCache.get(id);
-        //if(cDeg != null) {
-        //    return cDeg;
-        //}
+        Degree cDeg = dCache.get(id);
+        if(cDeg != null) {
+            return cDeg;
+        }
 
         try {
             //Get data from studentDB - DEGREES
@@ -90,6 +92,7 @@ public class StudentManager {
                 return null;
             }
 
+            //add result to cache
             Degree deg = new Degree(id, result.getString(2));
             dCache.put(id, deg);
             return deg;
@@ -111,7 +114,12 @@ public class StudentManager {
             String sql = "DELETE FROM STUDENTS WHERE id=?";
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1,student.getId());
-            statement.executeUpdate();
+            int affected = statement.executeUpdate();
+
+            //if something was removed also remove it from cache if possible
+            if(affected > 0){
+                sCache.remove(student.getId());
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -127,12 +135,16 @@ public class StudentManager {
     public static void update(Student student){
         String sql= "UPDATE STUDENTS SET first_name=?, name=?, degree=? WHERE id=?";
         try {
+            //update database
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1,student.getFirstName());
             statement.setString(2,student.getName());
             statement.setString(3,student.getDegree().getId());
             statement.setString(4,student.getId());
             statement.executeUpdate();
+
+            //update cache
+            sCache.put(student.getId(), student);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -150,8 +162,11 @@ public class StudentManager {
      */
     public static Student createStudent(String name,String firstName,Degree degree) {
         try {
-            String id = "id" + (getAllStudentIds().size() + 1);
+            //Create student
+            String id = "id" + (getAllStudentIds().size() + 1); //TODO: fix id generation
             Student stu = new Student(id, name, firstName, degree);
+
+            //Put into database
             String sql = "INSERT INTO STUDENTS (id, first_name, name, degree) VALUES (?,?,?,?)";
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1,id);
@@ -159,6 +174,10 @@ public class StudentManager {
             statement.setString(3,name);
             statement.setString(4,degree.getId());
             statement.executeUpdate();
+
+            //put in cache
+            sCache.put(id, stu);
+
             return stu;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -171,7 +190,6 @@ public class StudentManager {
      * @return
      */
     public static Collection<String> getAllStudentIds() {
-
         try {
             String sql = "select ID from STUDENTS";
             PreparedStatement statement = con.prepareStatement(sql);

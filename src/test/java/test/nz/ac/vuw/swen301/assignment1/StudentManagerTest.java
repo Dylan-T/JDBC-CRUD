@@ -81,13 +81,23 @@ public class StudentManagerTest {
     @Test
     public void testUpdateStudent()  {
         Student before = StudentManager.readStudent("id1");
+        String beforeName = before.getName();
+        String beforeFName = before.getFirstName();
+        Degree beforeDeg = before.getDegree();
+
+        before.setName("NTest");
+        before.setFirstName("FNTest");
+        before.setDegree(StudentManager.readDegree("deg2"));
+
+        StudentManager.update(before);
+
         Student after = StudentManager.readStudent("id1");
 
-        after.setFirstName("FNTesting");
-        after.setName("NTesting");
-        StudentManager.update(after);
-
-        assert(!before.equals(after));
+        assert(before.equals(after)
+                && before==after
+                && !beforeName.equals(after.getName())
+                && !beforeFName.equals(after.getFirstName())
+                && !beforeDeg.equals(after.getDegree()));
     }
 
 
