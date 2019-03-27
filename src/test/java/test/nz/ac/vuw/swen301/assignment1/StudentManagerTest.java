@@ -76,8 +76,6 @@ public class StudentManagerTest {
     }
 
 
-
-
     @Test
     public void testUpdateStudent()  {
         Student before = StudentManager.readStudent("id1");
@@ -98,6 +96,17 @@ public class StudentManagerTest {
                 && !beforeName.equals(after.getName())
                 && !beforeFName.equals(after.getFirstName())
                 && !beforeDeg.equals(after.getDegree()));
+    }
+
+    @Test
+    public void testObjectInstances() {
+        Student s1 = StudentManager.readStudent("id4");
+        Student s2 = StudentManager.readStudent("id4");
+
+        Degree d1 = StudentManager.readDegree("deg1");
+        Degree d2 = StudentManager.readDegree("deg1");
+
+        assert(s1==s2 && d1 ==d2);
     }
 
 
