@@ -36,6 +36,7 @@
                 <version>2.0</version>
             </plugin>
 
+            <!-- .jar generation -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

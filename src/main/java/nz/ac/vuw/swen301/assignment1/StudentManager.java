@@ -55,6 +55,7 @@ public class StudentManager {
             Student stu = new Student(id, result.getString(2), result.getString(3), readDegree(result.getString(4)));
             sCache.put(id, stu);
 
+            statement.close();
             con.close();
             return stu;
         } catch(SQLException e){
@@ -97,6 +98,7 @@ public class StudentManager {
             Degree deg = new Degree(id, result.getString(2));
             dCache.put(id, deg);
 
+            statement.close();
             con.close();
             return deg;
         }catch(SQLException e){
@@ -123,6 +125,8 @@ public class StudentManager {
             if(affected > 0){
                 sCache.remove(student.getId());
             }
+
+            statement.close();
             con.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -151,6 +155,8 @@ public class StudentManager {
 
             //update cache
             sCache.put(student.getId(), student);
+
+            statement.close();
             con.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -184,6 +190,7 @@ public class StudentManager {
             statement.setString(4,degree.getId());
             statement.executeUpdate();
 
+            statement.close();
             con.close();
 
             //put in cache
@@ -211,6 +218,8 @@ public class StudentManager {
             while(result.next()){
                 ids.add(result.getString("id"));
             }
+
+            statement.close();
             con.close();
             return ids;
         } catch (SQLException e) {
@@ -235,6 +244,8 @@ public class StudentManager {
             while(result.next()){
                 ids.add(result.getString("id"));
             }
+
+            statement.close();
             con.close();
             return ids;
         } catch (SQLException e) {
