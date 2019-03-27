@@ -14,17 +14,11 @@ import java.util.HashSet;
 public class StudentManager {
     private static HashMap<String, Student> sCache = new HashMap<>();
     private static HashMap<String, Degree> dCache = new HashMap<>();
-    private static Connection con;
 
     //  DO NOT REMOVE THE FOLLOWING -- THIS WILL ENSURE THAT THE DATABASE IS AVAILABLE
     // AND THE APPLICATION CAN CONNECT TO IT WITH JDBC
     static {
         StudentDB.init();
-        try {
-            con = DriverManager.getConnection("jdbc:derby:memory:student_records");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
     // DO NOT REMOVE BLOCK ENDS HERE
 
@@ -44,6 +38,8 @@ public class StudentManager {
             return cStu;
         }
         try {
+            //open connection
+            Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
             //Get info from database
             String sql = "select * from STUDENTS where id=?";
             PreparedStatement statement = con.prepareStatement(sql);
@@ -58,6 +54,8 @@ public class StudentManager {
             //Add to cache
             Student stu = new Student(id, result.getString(2), result.getString(3), readDegree(result.getString(4)));
             sCache.put(id, stu);
+
+            con.close();
             return stu;
         } catch(SQLException e){
             e.printStackTrace();
@@ -81,6 +79,9 @@ public class StudentManager {
         }
 
         try {
+            //open connection
+            Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
+
             //Get data from studentDB - DEGREES
             String sql = "select * from DEGREES where id=?";
             PreparedStatement statement = con.prepareStatement(sql);
@@ -95,6 +96,8 @@ public class StudentManager {
             //add result to cache
             Degree deg = new Degree(id, result.getString(2));
             dCache.put(id, deg);
+
+            con.close();
             return deg;
         }catch(SQLException e){
             e.printStackTrace();
@@ -110,7 +113,7 @@ public class StudentManager {
     public static void delete(Student student) {
         //Get data from studentDB - DEGREES
         try {
-            con = DriverManager.getConnection("jdbc:derby:memory:student_records");
+            Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
             String sql = "DELETE FROM STUDENTS WHERE id=?";
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1,student.getId());
@@ -120,6 +123,7 @@ public class StudentManager {
             if(affected > 0){
                 sCache.remove(student.getId());
             }
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -135,6 +139,8 @@ public class StudentManager {
     public static void update(Student student){
         String sql= "UPDATE STUDENTS SET first_name=?, name=?, degree=? WHERE id=?";
         try {
+            Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
+
             //update database
             PreparedStatement statement = con.prepareStatement(sql);
             statement.setString(1,student.getFirstName());
@@ -145,6 +151,7 @@ public class StudentManager {
 
             //update cache
             sCache.put(student.getId(), student);
+            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -166,6 +173,8 @@ public class StudentManager {
             String id = "id" + (getAllStudentIds().size() + 1); //TODO: fix id generation
             Student stu = new Student(id, name, firstName, degree);
 
+            Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
+
             //Put into database
             String sql = "INSERT INTO STUDENTS (id, first_name, name, degree) VALUES (?,?,?,?)";
             PreparedStatement statement = con.prepareStatement(sql);
@@ -174,6 +183,8 @@ public class StudentManager {
             statement.setString(3,name);
             statement.setString(4,degree.getId());
             statement.executeUpdate();
+
+            con.close();
 
             //put in cache
             sCache.put(id, stu);
@@ -191,6 +202,8 @@ public class StudentManager {
      */
     public static Collection<String> getAllStudentIds() {
         try {
+            Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
+
             String sql = "select ID from STUDENTS";
             PreparedStatement statement = con.prepareStatement(sql);
             ResultSet result = statement.executeQuery();
@@ -198,6 +211,7 @@ public class StudentManager {
             while(result.next()){
                 ids.add(result.getString("id"));
             }
+            con.close();
             return ids;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -213,6 +227,7 @@ public class StudentManager {
     public static Iterable<String> getAllDegreeIds() {
 
         try {
+            Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
             String sql = "select ID from DEGREES";
             PreparedStatement statement = con.prepareStatement(sql);
             ResultSet result = statement.executeQuery();
@@ -220,6 +235,7 @@ public class StudentManager {
             while(result.next()){
                 ids.add(result.getString("id"));
             }
+            con.close();
             return ids;
         } catch (SQLException e) {
             e.printStackTrace();
