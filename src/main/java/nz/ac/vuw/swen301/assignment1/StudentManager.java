@@ -176,7 +176,20 @@ public class StudentManager {
     public static Student createStudent(String name,String firstName,Degree degree) {
         try {
             //Create student
-            String id = "id" + (getAllStudentIds().size() + 1); //TODO: fix id generation
+            //Get unique id
+            Collection<String> ids = getAllStudentIds();
+            String temp;
+            String id = null;
+            for(int i = 0; i < Integer.MAX_VALUE; i++){
+                temp = "id"+i;
+                if(!ids.contains(temp)){
+                    id = temp;
+                    break;
+                }
+            }
+
+
+
             Student stu = new Student(id, name, firstName, degree);
 
             Connection con = DriverManager.getConnection("jdbc:derby:memory:student_records");
@@ -244,7 +257,6 @@ public class StudentManager {
             while(result.next()){
                 ids.add(result.getString("id"));
             }
-
             statement.close();
             con.close();
             return ids;

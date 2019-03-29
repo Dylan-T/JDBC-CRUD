@@ -34,11 +34,9 @@ public class StudentManagerTest {
 
     @Test(timeout = 1000)
     public void testReadStudentSpeed()  {
-        long start = System.currentTimeMillis();
         for(int i = 1; i < 1000; i++){
             Student student = StudentManager.readStudent("id"+i);
         }
-        System.out.println(System.currentTimeMillis() - start);
     }
 
     @Test
@@ -62,7 +60,7 @@ public class StudentManagerTest {
     @Test
     public void testCreateStudent()  {
         Student createdStu = StudentManager.createStudent("Test", "Test", StudentManager.readDegree("deg1"));
-        Student student = StudentManager.readStudent("id10001");
+        Student student = StudentManager.readStudent("id10000");
         assertEquals(createdStu, student);
     }
 

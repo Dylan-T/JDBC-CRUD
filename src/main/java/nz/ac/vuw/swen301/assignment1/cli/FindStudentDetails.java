@@ -16,7 +16,11 @@ public class FindStudentDetails {
     public static void main (String[] arg) throws SQLException {
         if(arg.length > 0) {
             Object student = StudentManager.readStudent(arg[0]);
-            System.out.println(student.toString());
+            if(student != null){
+                System.out.println(student.toString());
+            }else{
+                System.out.println("A student with this ID does not exist");
+            }
         }
     }
 }
